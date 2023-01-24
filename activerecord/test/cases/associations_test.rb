@@ -234,7 +234,7 @@ class AssociationProxyTest < ActiveRecord::TestCase
     david = developers(:david)
 
     assert david.projects.scope.is_a?(ActiveRecord::Relation)
-    assert_equal david.projects, david.projects.scope
+    assert_equal david.projects, david.projects.scope # unreliable
   end
 
   test "proxy object is cached" do

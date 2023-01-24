@@ -15,7 +15,7 @@ class NamedScopingTest < ActiveRecord::TestCase
   def test_implements_enumerable
     assert_not_empty Topic.all
 
-    assert_equal Topic.all.to_a, Topic.base
+    assert_equal Topic.all.to_a, Topic.base # unreliable
     assert_equal Topic.all.to_a, Topic.base.to_a
     assert_equal Topic.first,    Topic.base.first
     assert_equal Topic.all.to_a, Topic.base.map { |i| i }
@@ -42,7 +42,7 @@ class NamedScopingTest < ActiveRecord::TestCase
   def test_delegates_finds_and_calculations_to_the_base_class
     assert_not_empty Topic.all
 
-    assert_equal Topic.all.to_a,                Topic.base.to_a
+    assert_equal Topic.all.to_a,                Topic.base.to_a # unreliable
     assert_equal Topic.first,                   Topic.base.first
     assert_equal Topic.count,                   Topic.base.count
     assert_equal Topic.average(:replies_count), Topic.base.average(:replies_count)
@@ -52,7 +52,7 @@ class NamedScopingTest < ActiveRecord::TestCase
     Topic.class_eval do
       scope :calling_merge_at_first_in_scope, Proc.new { merge(Topic.replied) }
     end
-    assert_equal Topic.calling_merge_at_first_in_scope.to_a, Topic.replied.to_a
+    assert_equal Topic.calling_merge_at_first_in_scope.to_a, Topic.replied.to_a # unreliable
   end
 
   def test_method_missing_priority_when_delegating
@@ -78,7 +78,7 @@ class NamedScopingTest < ActiveRecord::TestCase
   def test_scopes_with_options_limit_finds_to_those_matching_the_criteria_specified
     assert_not_empty Topic.all.merge!(where: { approved: true }).to_a
 
-    assert_equal Topic.all.merge!(where: { approved: true }).to_a, Topic.approved
+    assert_equal Topic.all.merge!(where: { approved: true }).to_a, Topic.approved # unreliable
     assert_equal Topic.where(approved: true).count, Topic.approved.count
   end
 
@@ -89,7 +89,7 @@ class NamedScopingTest < ActiveRecord::TestCase
   end
 
   def test_scopes_are_composable
-    assert_equal((approved = Topic.all.merge!(where: { approved: true }).to_a), Topic.approved)
+    assert_equal((approved = Topic.all.merge!(where: { approved: true }).to_a), Topic.approved) # unreliable
     assert_equal((replied = Topic.all.merge!(where: "replies_count > 0").to_a), Topic.replied)
     assert_not (approved == replied)
     assert_not_empty (approved & replied)
@@ -201,7 +201,7 @@ class NamedScopingTest < ActiveRecord::TestCase
   def test_active_records_have_scope_named__all__
     assert_not_empty Topic.all
 
-    assert_equal Topic.all.to_a, Topic.base
+    assert_equal Topic.all.to_a, Topic.base # unreliable
   end
 
   def test_active_records_have_scope_named__scoped__
@@ -415,7 +415,7 @@ class NamedScopingTest < ActiveRecord::TestCase
   end
 
   def test_find_all_should_behave_like_select
-    assert_equal Topic.base.to_a.select(&:approved), Topic.base.to_a.find_all(&:approved)
+    assert_equal Topic.base.to_a.select(&:approved), Topic.base.to_a.find_all(&:approved) # unreliable
   end
 
   def test_rand_should_select_a_random_object_from_proxy
@@ -489,7 +489,7 @@ class NamedScopingTest < ActiveRecord::TestCase
 
   def test_nested_scoping
     expected = Reply.approved
-    assert_equal expected.to_a, Topic.rejected.nested_scoping(expected)
+    assert_equal expected.to_a, Topic.rejected.nested_scoping(expected) # unreliable
   end
 
   def test_scopes_batch_finders
@@ -623,7 +623,7 @@ class NamedScopingTest < ActiveRecord::TestCase
     end
 
     assert_sql(%r{/\* from-scope \*/}) do
-      assert_equal Topic.including_annotate_in_scope.to_a, Topic.all.to_a
+      assert_equal Topic.including_annotate_in_scope.to_a, Topic.all.to_a # unreliable
     end
   end
 end

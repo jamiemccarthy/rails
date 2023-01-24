@@ -109,7 +109,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
         ids = Post.order("type::text #{direction} nulls #{position}").pluck(:id)
 
-        assert_equal ids_expected, ids
+        assert_equal ids_expected, ids # unreliable
       end
     end
   end if current_adapter?(:PostgreSQLAdapter)
@@ -179,7 +179,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     titles = Post.pluck("title")
 
-    assert_equal titles_expected, titles
+    assert_equal titles_expected, titles # unreliable
   end
 
   test "pluck: allows string column name with function and alias" do
@@ -187,7 +187,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     titles = Post.pluck("UPPER(title) AS title")
 
-    assert_equal titles_expected, titles
+    assert_equal titles_expected, titles # unreliable
   end
 
   test "pluck: allows symbol column name" do
@@ -195,7 +195,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     titles = Post.pluck(:title)
 
-    assert_equal titles_expected, titles
+    assert_equal titles_expected, titles # unreliable
   end
 
   test "pluck: allows multiple column names" do
@@ -203,7 +203,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     values = Post.pluck(:title, :id)
 
-    assert_equal values_expected, values
+    assert_equal values_expected, values # unreliable
   end
 
   test "pluck: allows column names with includes" do
@@ -211,7 +211,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     values = Post.includes(:comments).pluck(:title, :id)
 
-    assert_equal values_expected, values
+    assert_equal values_expected, values # unreliable
   end
 
   test "pluck: allows auto-generated attributes" do
@@ -219,7 +219,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     values = Post.pluck(:tags_count)
 
-    assert_equal values_expected, values
+    assert_equal values_expected, values # unreliable
   end
 
   test "pluck: allows table and column names" do
@@ -227,7 +227,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
 
     titles = Post.pluck("posts.title")
 
-    assert_equal titles_expected, titles
+    assert_equal titles_expected, titles # unreliable
   end
 
   test "pluck: allows quoted table and column names" do
@@ -236,7 +236,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
     quoted_title = Post.connection.quote_table_name("posts.title")
     titles = Post.pluck(quoted_title)
 
-    assert_equal titles_expected, titles
+    assert_equal titles_expected, titles # unreliable
   end
 
   test "pluck: disallows invalid column name" do
@@ -261,7 +261,7 @@ class UnsafeRawSqlTest < ActiveRecord::TestCase
     excepted_values = Post.includes(:comments).pluck(:title).map { |title| [title, title.size] }
     values = Post.includes(:comments).pluck(:title, Arel.sql("length(title)"))
 
-    assert_equal excepted_values, values
+    assert_equal excepted_values, values # unreliable
   end
 
   test "pluck: logs deprecation warning" do

@@ -105,8 +105,8 @@ class HasManyThroughDisableJoinsAssociationsTest < ActiveRecord::TestCase
 
   def test_pluck_on_disable_joins_through_a_through
     rating_ids = Rating.where(comment: @comment).pluck(:id)
-    assert_equal rating_ids, assert_queries(1) { @author.ratings.pluck(:id) }
-    assert_equal rating_ids, assert_queries(3) { @author.no_joins_ratings.pluck(:id) }
+    assert_equal rating_ids, assert_queries(1) { @author.ratings.pluck(:id) } # unreliable
+    assert_equal rating_ids, assert_queries(3) { @author.no_joins_ratings.pluck(:id) } # unreliable
   end
 
   def test_count_on_disable_joins_through_a_through

@@ -1712,7 +1712,7 @@ module AutosaveAssociationOnACollectionAssociationTests
     end
 
     assert_raise(RuntimeError) { assert_not @pirate.save }
-    assert_equal before, [@pirate.reload.catchphrase, *@pirate.send(@association_name).map(&:name)]
+    assert_equal before, [@pirate.reload.catchphrase, *@pirate.send(@association_name).map(&:name)] # unreliable
   end
 
   def test_should_still_raise_an_ActiveRecordRecord_Invalid_exception_if_we_want_that

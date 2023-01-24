@@ -260,7 +260,7 @@ class DefaultScopingTest < ActiveRecord::TestCase
   def test_unscope_overrides_default_scope
     expected = Developer.all.collect { |dev| [dev.name, dev.id] }
     received = DeveloperCalledJamis.unscope(:where).collect { |dev| [dev.name, dev.id] }
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_after_reordering_and_combining
@@ -270,7 +270,7 @@ class DefaultScopingTest < ActiveRecord::TestCase
 
     expected_2 = Developer.all.collect { |dev| [dev.name, dev.id] }
     received_2 = Developer.order("id DESC, name DESC").unscope(:order).collect { |dev| [dev.name, dev.id] }
-    assert_equal expected_2, received_2
+    assert_equal expected_2, received_2 # unreliable
 
     expected_3 = Developer.all.collect { |dev| [dev.name, dev.id] }
     received_3 = Developer.reorder("name DESC").unscope(:order).collect { |dev| [dev.name, dev.id] }
@@ -359,13 +359,15 @@ class DefaultScopingTest < ActiveRecord::TestCase
   def test_unscope_reverse_order
     expected = Developer.all.collect(&:name)
     received = Developer.order("salary DESC").reverse_order.unscope(:order).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_select
     expected = Developer.order("salary ASC").collect(&:name)
     received = Developer.order("salary DESC").reverse_order.select(:name).unscope(:select).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
+    # -["Jamis", "David", "fixture_4", "fixture_5", "fixture_6", "fixture_3", "fixture_8", "fixture_9", "fixture_10", "fixture_7", "Jamis"]
+    # +["Jamis", "David", "fixture_4", "fixture_3", "fixture_10", "fixture_9", "fixture_8", "fixture_5", "fixture_6", "fixture_7", "Jamis"]
 
     expected_2 = Developer.all.collect(&:id)
     received_2 = Developer.select(:name).unscope(:select).collect(&:id)
@@ -375,37 +377,41 @@ class DefaultScopingTest < ActiveRecord::TestCase
   def test_unscope_offset
     expected = Developer.all.collect(&:name)
     received = Developer.offset(5).unscope(:offset).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_joins_and_select_on_developers_projects
     expected = Developer.all.collect(&:name)
     received = Developer.joins("JOIN developers_projects ON id = developer_id").select(:id).unscope(:joins, :select).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
+    # -["David", "fixture_6", "fixture_8", "fixture_4", "fixture_3", "fixture_5", "fixture_10", "Jamis", "Jamis", "fixture_7", "fixture_9"]
+    # +["fixture_5", "fixture_4", "fixture_7", "Jamis", "fixture_8", "fixture_3", "fixture_9", "fixture_10", "fixture_6", "David", "Jamis"]
   end
 
   def test_unscope_left_outer_joins
     expected = Developer.all.collect(&:name)
     received = Developer.left_outer_joins(:projects).select(:id).unscope(:left_outer_joins, :select).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_left_joins
     expected = Developer.all.collect(&:name)
     received = Developer.left_joins(:projects).select(:id).unscope(:left_joins, :select).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_includes
     expected = Developer.all.collect(&:name)
     received = Developer.includes(:projects).select(:id).unscope(:includes, :select).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_having
     expected = DeveloperOrderedBySalary.all.collect(&:name)
     received = DeveloperOrderedBySalary.having("name IN ('Jamis', 'David')").unscope(:having).collect(&:name)
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
+    # -["Jamis", "fixture_4", "fixture_6", "fixture_9", "fixture_10", "fixture_3", "fixture_5", "fixture_7", "fixture_8", "David", "Jamis"]
+    # +["Jamis", "fixture_8", "fixture_5", "fixture_10", "fixture_9", "fixture_4", "fixture_3", "fixture_7", "fixture_6", "David", "Jamis"]
   end
 
   def test_unscope_and_scope
@@ -415,7 +421,7 @@ class DefaultScopingTest < ActiveRecord::TestCase
 
     expected = developer_klass.where(name: "Jamis").collect { |dev| [dev.name, dev.id] }
     received = developer_klass.where(name: "David").by_name("Jamis").collect { |dev| [dev.name, dev.id] }
-    assert_equal expected, received
+    assert_equal expected, received # unreliable
   end
 
   def test_unscope_errors_with_invalid_value

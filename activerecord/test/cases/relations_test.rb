@@ -167,14 +167,14 @@ class RelationTest < ActiveRecord::TestCase
 
   def test_finding_with_subquery
     relation = Topic.where(approved: true)
-    assert_equal relation.to_a, Topic.select("*").from(relation).to_a
+    assert_equal relation.to_a, Topic.select("*").from(relation).to_a # unreliable
     assert_equal relation.to_a, Topic.select("subquery.*").from(relation).to_a
     assert_equal relation.to_a, Topic.select("a.*").from(relation, :a).to_a
   end
 
   def test_finding_with_subquery_with_binds
     relation = Post.first.comments
-    assert_equal relation.to_a, Comment.select("*").from(relation).to_a
+    assert_equal relation.to_a, Comment.select("*").from(relation).to_a # unreliable
     assert_equal relation.to_a, Comment.select("subquery.*").from(relation).to_a
     assert_equal relation.to_a, Comment.select("a.*").from(relation, :a).to_a
   end
@@ -249,7 +249,7 @@ class RelationTest < ActiveRecord::TestCase
 
   def test_finding_with_subquery_with_eager_loading_in_from
     relation = Comment.includes(:post).where("posts.type": "Post").order(:id)
-    assert_equal relation.to_a, Comment.select("*").from(relation).to_a
+    assert_equal relation.to_a, Comment.select("*").from(relation).to_a # unreliable
     assert_equal relation.to_a, Comment.select("subquery.*").from(relation).to_a
     assert_equal relation.to_a, Comment.select("a.*").from(relation, :a).to_a
   end
@@ -634,7 +634,7 @@ class RelationTest < ActiveRecord::TestCase
   def test_extracted_association
     relation_authors = assert_queries(2) { Post.all.extract_associated(:author) }
     root_authors = assert_queries(2) { Post.extract_associated(:author) }
-    assert_equal relation_authors, root_authors
+    assert_equal relation_authors, root_authors # unreliable
     assert_equal Post.all.collect(&:author), relation_authors
   end
 
@@ -880,7 +880,9 @@ class RelationTest < ActiveRecord::TestCase
     ids = Author.pluck(:id)
     slugs = ids.map { |id| "#{id}-as-a-slug" }
 
-    assert_equal Author.where(id: ids).to_a, Author.where(id: slugs).to_a
+    assert_equal Author.where(id: ids).to_a, Author.where(id: slugs).to_a # unreliable
+    # -[#<Author id: 3, name: "Bob", author_address_id: 4, author_address_extra_id: nil, organization_id: nil, owned_essay_id: nil>, #<Author id: 2, name: "Mary", author_address_id: 3, author_address_extra_id: nil, organization_id: nil, owned_essay_id: nil>, #<Author id: 1, name: "David", author_address_id: 1, author_address_extra_id: 2, organization_id: "No Such Agency", owned_essay_id: "A Modest Proposal">]
+    # +[#<Author id: 3, name: "Bob", author_address_id: 4, author_address_extra_id: nil, organization_id: nil, owned_essay_id: nil>, #<Author id: 1, name: "David", author_address_id: 1, author_address_extra_id: 2, organization_id: "No Such Agency", owned_essay_id: "A Modest Proposal">, #<Author id: 2, name: "Mary", author_address_id: 3, author_address_extra_id: nil, organization_id: nil, owned_essay_id: nil>]
   end
 
   def test_find_all_using_where_with_relation
@@ -1990,12 +1992,14 @@ class RelationTest < ActiveRecord::TestCase
 
   test "relations show the records in #inspect" do
     relation = Post.limit(2)
-    assert_equal "#<ActiveRecord::Relation [#{Post.limit(2).map(&:inspect).join(', ')}]>", relation.inspect
+    assert_equal "#<ActiveRecord::Relation [#{Post.limit(2).map(&:inspect).join(', ')}]>", relation.inspect # unreliable
+    # -"#<ActiveRecord::Relation [#<Post id: 11, author_id: 2, title: \"other post by mary\", body: \"hello\", type: \"Post\", legacy_comments_count: 0, taggings_with_delete_all_count: 0, taggings_with_destroy_count: 0, tags_count: 1, indestructible_tags_count: 0, tags_with_destroy_count: 0, tags_with_nullify_count: 0>, #<SpecialPost id: 2, author_id: 1, title: \"So I was thinking\", body: \"Like I hopefully always am\", type: \"SpecialPost\", legacy_comments_count: 1, taggings_with_delete_all_count: 0, taggings_with_destroy_count: 0, tags_count: 1, indestructible_tags_count: 0, tags_with_destroy_count: 0, tags_with_nullify_count: 0>]>"
+    # +"#<ActiveRecord::Relation [#<Post id: 4, author_id: 1, title: \"sti comments\", body: \"hello\", type: \"Post\", legacy_comments_count: 5, taggings_with_delete_all_count: 0, taggings_with_destroy_count: 0, tags_count: 0, indestructible_tags_count: 0, tags_with_destroy_count: 0, tags_with_nullify_count: 0>, #<StiPost id: 5, author_id: 1, title: \"sti me\", body: \"hello\", type: \"StiPost\", legacy_comments_count: 2, taggings_with_delete_all_count: 0, taggings_with_destroy_count: 0, tags_count: 0, indestructible_tags_count: 0, tags_with_destroy_count: 0, tags_with_nullify_count: 0>]>"
   end
 
   test "relations limit the records in #inspect at 10" do
     relation = Post.limit(11)
-    assert_equal "#<ActiveRecord::Relation [#{Post.limit(10).map(&:inspect).join(', ')}, ...]>", relation.inspect
+    assert_equal "#<ActiveRecord::Relation [#{Post.limit(10).map(&:inspect).join(', ')}, ...]>", relation.inspect # unreliable
   end
 
   test "relations don't load all records in #inspect" do
@@ -2017,7 +2021,7 @@ class RelationTest < ActiveRecord::TestCase
     expected = "#<ActiveRecord::Relation [#{Post.limit(2).map(&:inspect).join(', ')}]>"
 
     assert_no_queries do
-      assert_equal expected, relation.inspect
+      assert_equal expected, relation.inspect # unreliable
     end
   end
 

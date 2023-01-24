@@ -64,7 +64,7 @@ class HasManyAssociationsTestPrimaryKeys < ActiveRecord::TestCase
       assert_equal 2, subscriber.subscriptions.size
     end
 
-    assert_equal Subscription.where(subscriber_id: "webster132"), subscriber.subscriptions
+    assert_equal Subscription.where(subscriber_id: "webster132"), subscriber.subscriptions # unreliable
   end
 
   def test_association_primary_key_on_new_record_should_fetch_with_query
@@ -385,7 +385,7 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
 
     speedometer.reload
 
-    assert_equal ["first", "second"], speedometer.minivans.map(&:name)
+    assert_equal ["first", "second"], speedometer.minivans.map(&:name) # unreliable
     assert_equal ["blue", "blue"], speedometer.minivans.map(&:color)
   end
 
@@ -399,7 +399,7 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
 
     speedometer.reload
 
-    assert_equal ["first", "second"], speedometer.minivans.map(&:name)
+    assert_equal ["first", "second"], speedometer.minivans.map(&:name) # unreliable
     assert_equal ["blue", "blue"], speedometer.minivans.map(&:color)
   end
 
@@ -2152,7 +2152,7 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     assert_equal expected, original.comments_desc.map(&:id)
     preloaded = Author.includes(:comments_desc).find(original.id)
     assert_equal expected, preloaded.comments_desc.map(&:id)
-    assert_equal original.posts_sorted_by_id.first.comments.map(&:id), preloaded.posts_sorted_by_id.first.comments.map(&:id)
+    assert_equal original.posts_sorted_by_id.first.comments.map(&:id), preloaded.posts_sorted_by_id.first.comments.map(&:id) # unreliable
   end
 
   def test_dynamic_find_should_respect_association_order_for_through
@@ -2626,7 +2626,7 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     bulb2 = car.bulbs.create
     bulb3 = Bulb.create
 
-    assert_equal [bulb1, bulb2], car.bulbs
+    assert_equal [bulb1, bulb2], car.bulbs # unreliable
     result = car.bulbs.replace([bulb3, bulb1])
     assert_equal [bulb1, bulb3], car.bulbs
     assert_equal [bulb1, bulb3], result
@@ -3071,7 +3071,7 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
 
     bulb2 = car.bulbs.create!
 
-    assert_equal [bulb.id, bulb2.id], car.bulb_ids
+    assert_equal [bulb.id, bulb2.id], car.bulb_ids # unreliable
     assert_no_queries { car.bulb_ids }
   end
 

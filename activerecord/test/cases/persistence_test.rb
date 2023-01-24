@@ -102,7 +102,8 @@ class PersistenceTest < ActiveRecord::TestCase
   end
 
   def test_returns_object_even_if_validations_failed
-    assert_equal Developer.all.to_a, Developer.update(salary: 1_000_000)
+    # I don't think either of these is ordered
+    assert_equal Developer.all.to_a, Developer.update(salary: 1_000_000) # unreliable
   end
 
   def test_update_many!

@@ -1437,8 +1437,10 @@ class EagerAssociationTest < ActiveRecord::TestCase
 
     Comment.where("1=0").scoping do
       assert_equal comments, Post.find(1).comments
-      assert_equal comments, Post.preload(:comments).find(1).comments
+      assert_equal comments, Post.preload(:comments).find(1).comments # unreliable
       assert_equal comments, Post.eager_load(:comments).find(1).comments
+      # -[#<Comment id: 1, post_id: 1, body: "Thank you for the welcome", type: "Comment", label: "default", tags_count: 0, children_count: 0, parent_id: nil, author_type: nil, author_id: nil, resource_id: nil, resource_type: nil, origin_id: nil, origin_type: nil, developer_id: nil, updated_at: "2023-01-24 03:12:25.315960000 +0000", deleted_at: nil, comments: nil, company: nil>, #<Comment id: 2, post_id: 1, body: "Thank you again for the welcome", type: "Comment", label: "default", tags_count: 0, children_count: 0, parent_id: nil, author_type: nil, author_id: nil, resource_id: nil, resource_type: nil, origin_id: nil, origin_type: nil, developer_id: nil, updated_at: "2023-01-24 03:12:25.315960000 +0000", deleted_at: nil, comments: nil, company: nil>]
+      # +#<ActiveRecord::Associations::CollectionProxy [#<Comment id: 2, post_id: 1, body: "Thank you again for the welcome", type: "Comment", label: "default", tags_count: 0, children_count: 0, parent_id: nil, author_type: nil, author_id: nil, resource_id: nil, resource_type: nil, origin_id: nil, origin_type: nil, developer_id: nil, updated_at: "2023-01-24 03:12:25.315960000 +0000", deleted_at: nil, comments: nil, company: nil>, #<Comment id: 1, post_id: 1, body: "Thank you for the welcome", type: "Comment", label: "default", tags_count: 0, children_count: 0, parent_id: nil, author_type: nil, author_id: nil, resource_id: nil, resource_type: nil, origin_id: nil, origin_type: nil, developer_id: nil, updated_at: "2023-01-24 03:12:25.315960000 +0000", deleted_at: nil, comments: nil, company: nil>]>
     end
   end
 

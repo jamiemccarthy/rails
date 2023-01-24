@@ -12,7 +12,7 @@ module ActiveRecord
 
     def test_or_with_relation
       expected = Post.where("id = 1 or id = 2").to_a
-      assert_equal expected, Post.where("id = 1").or(Post.where("id = 2")).to_a
+      assert_equal expected, Post.where("id = 1").or(Post.where("id = 2")).to_a # unreliable
     end
 
     def test_or_identity
@@ -46,12 +46,12 @@ module ActiveRecord
 
     def test_or_without_left_where
       expected = Post.all
-      assert_equal expected, Post.or(Post.where("id = 1")).to_a
+      assert_equal expected, Post.or(Post.where("id = 1")).to_a # unreliable
     end
 
     def test_or_without_right_where
       expected = Post.all
-      assert_equal expected, Post.where("id = 1").or(Post.all).to_a
+      assert_equal expected, Post.where("id = 1").or(Post.all).to_a # unreliable
     end
 
     def test_or_preserves_other_querying_methods
@@ -86,7 +86,7 @@ module ActiveRecord
     def test_or_with_unscope_where_column
       expected = Post.where("id = 1 or id = 2")
       partial = Post.where(id: 1).where.not(id: 2)
-      assert_equal expected, partial.or(partial.unscope(where: :id).where("id = 2")).to_a
+      assert_equal expected, partial.or(partial.unscope(where: :id).where("id = 2")).to_a # unreliable
     end
 
     def test_or_with_unscope_order
@@ -111,7 +111,7 @@ module ActiveRecord
 
     def test_or_with_named_scope
       expected = Post.where("id = 1 or body LIKE '\%a\%'").to_a
-      assert_equal expected, Post.where("id = 1").or(Post.containing_the_letter_a)
+      assert_equal expected, Post.where("id = 1").or(Post.containing_the_letter_a) # unreliable
     end
 
     def test_or_inside_named_scope

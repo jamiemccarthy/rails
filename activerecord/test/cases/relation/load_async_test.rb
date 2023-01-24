@@ -111,7 +111,7 @@ module ActiveRecord
       deferred_posts = Post.where(author_id: 1).load_async
       wait_for_async_query
 
-      assert_equal expected_records, deferred_posts.to_a
+      assert_equal expected_records, deferred_posts.to_a # unreliable
       assert_equal Post.connection.supports_concurrent_connections?, status[:async]
       assert_equal Thread.current.object_id, status[:thread_id]
       if Post.connection.supports_concurrent_connections?
@@ -138,7 +138,7 @@ module ActiveRecord
       deferred_posts = Post.where(author_id: 1).load_async
       wait_for_async_query
 
-      assert_equal expected_records, deferred_posts.to_a
+      assert_equal expected_records, deferred_posts.to_a # unreliable
       assert_equal Post.connection.supports_concurrent_connections?, status[:async]
     ensure
       ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
@@ -183,7 +183,7 @@ module ActiveRecord
         assert_predicate deferred_posts, :scheduled?
       end
 
-      assert_equal expected_records, deferred_posts.to_a
+      assert_equal expected_records, deferred_posts.to_a # unreliable
       assert_queries(0) do
         deferred_posts.each(&:comments)
       end
@@ -202,7 +202,7 @@ module ActiveRecord
 
     def test_pluck
       titles = Post.where(author_id: 1).pluck(:title)
-      assert_equal titles, Post.where(author_id: 1).load_async.pluck(:title)
+      assert_equal titles, Post.where(author_id: 1).load_async.pluck(:title) # unreliable
     end
 
     def test_size
@@ -268,7 +268,7 @@ module ActiveRecord
 
         deferred_posts = Post.where(author_id: 1).load_async
 
-        assert_equal expected_records, deferred_posts.to_a
+        assert_equal expected_records, deferred_posts.to_a # unreliable
         assert_not_equal Post.connection.supports_concurrent_connections?, status[:async]
       ensure
         ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
@@ -304,7 +304,7 @@ module ActiveRecord
 
         assert_not_predicate deferred_posts, :scheduled?
 
-        assert_equal expected_records, deferred_posts.to_a
+        assert_equal expected_records, deferred_posts.to_a # unreliable
         assert_queries(0) do
           deferred_posts.each(&:comments)
         end
@@ -325,7 +325,7 @@ module ActiveRecord
 
       def test_pluck
         titles = Post.where(author_id: 1).pluck(:title)
-        assert_equal titles, Post.where(author_id: 1).load_async.pluck(:title)
+        assert_equal titles, Post.where(author_id: 1).load_async.pluck(:title) # unreliable
       end
 
       def test_size
@@ -403,7 +403,7 @@ module ActiveRecord
         deferred_posts = Post.where(author_id: 1).load_async
         wait_for_async_query
 
-        assert_equal expected_records, deferred_posts.to_a
+        assert_equal expected_records, deferred_posts.to_a # unreliable
         assert_equal Post.connection.supports_concurrent_connections?, status[:async]
       ensure
         ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
@@ -439,7 +439,7 @@ module ActiveRecord
 
         assert_predicate deferred_posts, :scheduled?
 
-        assert_equal expected_records, deferred_posts.to_a
+        assert_equal expected_records, deferred_posts.to_a # unreliable
         assert_queries(0) do
           deferred_posts.each(&:comments)
         end
@@ -458,7 +458,7 @@ module ActiveRecord
 
       def test_pluck
         titles = Post.where(author_id: 1).pluck(:title)
-        assert_equal titles, Post.where(author_id: 1).load_async.pluck(:title)
+        assert_equal titles, Post.where(author_id: 1).load_async.pluck(:title) # unreliable
       end
 
       def test_size
@@ -547,7 +547,7 @@ module ActiveRecord
         wait_for_async_query
         wait_for_async_query
 
-        assert_equal expected_records, deferred_posts.to_a
+        assert_equal expected_records, deferred_posts.to_a # unreliable
         assert_equal expected_dogs, deferred_dogs.to_a
 
         assert_equal Post.connection.async_enabled?, status[:async]
