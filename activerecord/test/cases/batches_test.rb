@@ -352,7 +352,7 @@ class EachTest < ActiveRecord::TestCase
     ids = Post.order("id ASC").pluck(:id)
     assert_queries(6) do
       Post.in_batches(of: 2).each_record.with_index do |post, i|
-        assert_equal ids[i], post.id
+        assert_equal ids[i], post.id # possibly unreliable?
       end
     end
   end
